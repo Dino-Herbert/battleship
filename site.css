@@ -1,8 +1,32 @@
+body {
+  background-color: #000;
+}
+
 h1 {
   font-size: 50px;
 }
 
+div#board {
+  position: relative;
+  width: 1024px;
+  height: 863px;
+  margin: auto;
+  /*background-url: ("board.jpg");*/
+}
 
 .title {
-  margin-top: 100px;
+  margin-top: 50px;
+}
+
+.table {
+  border: solid 1px #fff;
+}
+
+.tbl-row {
+  /*border: solid 1px inherit;
+  height: 60px;*/
+}
+
+.tbl-data {
+  border: solid 1px gray;
 }

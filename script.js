@@ -9,7 +9,48 @@ var hits = 0;
 var guesses = 0;
 var isSunk = false;
 
-while(isSunk == false)
+function createTable () {
+  var board = $('#board');
+  var table = $('<table></table>').addClass("table");
+
+  for (var i = 0; i < 7; i++)
+  {
+    var row = $('<tr></tr>').addClass("tbl-row");
+    for (var j = 0; j < 10; j++)
+    {
+      var cell = $('<td></td>').addClass("tbl-data").attr("id", i + "" + j);
+      cell.text(i + "" + j);
+      row.append(cell);
+    }
+    table.append(row);
+  }
+  board.append(table);
+
+  var tbl = document.createElement("TABLE");
+  tbl.setAttribute("id", "Table");
+  board.append(tbl);
+
+  for (i = 0; i < 7; i++)
+  {
+    var row = tbl.insertRow(i);
+    for (var j = 0; j < 7; j++)
+    {
+      var cell = row.insertCell(j);
+      cell.innerHTML = i + "" + j;
+      cell.setAttribute("id", i + "" + j);
+    }
+  }
+}
+
+function squareTableCells() {
+  var width = $('.tbl-data').width();
+  $('.tbl-data').height(width);
+}
+
+createTable();
+squareTableCells();
+
+while(isSunk)
 {
   guess = prompt("Ready, Aim, Fire! (Enter a number 0-10):  ");
 
