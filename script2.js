@@ -42,6 +42,8 @@ function createTable () {
       cell.setAttribute('id', i + "" + j);
     }
   }
+
+  squareTableCells();
 }
 
 function squareTableCells() {
@@ -50,7 +52,22 @@ function squareTableCells() {
 }
 
 createTable();
-squareTableCells();
+
+$('#inputButton').on('click', function() {
+  var input = $('#guessInput'); //document.getElementbyId('guessInput').value
+  var guess = input.val();
+  controller.processGuess(guess);
+  input.val('');
+});
+
+$('#guessInput').on('keypress', function(e) {
+  var button = $('#inputButton');
+  if (e.keyCode === 13) {
+    button.click();
+    return false;
+  }
+});
+
 
 var view = {
   displayMessage: function(msg) {
@@ -70,7 +87,8 @@ var view = {
 };
 
 var model = {
-  boardSize: 7,
+  boardRows: 7,
+  boardCols: 10,
   numShips: 3,
   shipLength: 3,
   shipsSunks: 0,
@@ -84,7 +102,7 @@ var model = {
       var ship = this.ships[i]
       var index = ship.locations.indexOf(guess);
 
-      if (index <= 0) {
+      if (index >= 0) {
         ship.hits[index] = "hit";
         view.displayHit(guess);
         view.displayMessage("You got me!");
@@ -110,6 +128,47 @@ var model = {
   }
 };
 
+var controller = {
+  guesses: 0,
+  processGuess: function(guess) {
+    var location = parseGuess(guess);
+
+    if(location) {
+      this.guesses++;
+      var isOnTarget = model.shotOnTarget(location);
+
+      if(isOnTarget && model.shipssunk === model.numShips) {
+        view.displayMessage("You sank ALL my battleships in " +
+        this.guesses + " guesses.");
+      }
+    }
+  }
+};
+
+function parseGuess(guess) {
+  var alpha = [ "A", "B", "C", "D", "E", "F", "G" ];
+
+  if (guess === null || guess.length !== 2) {
+    alert("Oops! Please enter a letter and number.");
+  }
+  else {
+    var firstChar = guess.charAt(0);
+    var row = alpha.indexOf(firstChar);
+    var column = guess.charAt(1);
+
+    if(isNaN(row) || isNaN(column)) {
+      alert("That is not on the board");
+    }
+    else if (row < 0 || row >= model.boardRows
+      || column < 0 || column >= model.boardCols) {
+        alert("That is off the board");
+    }
+    else {
+      return row + column;
+    }
+  }
+  return null;
+}
 /*testing */
 /*
 view.displayHit('00');
@@ -117,6 +176,7 @@ view.displayHit('34');
 view.displayMiss('05');
 view.displayMiss('43');
 */
+/*
 model.shotOnTarget("06");
 model.shotOnTarget("16");
 model.shotOnTarget("26");
@@ -126,5 +186,27 @@ model.shotOnTarget("44");
 model.shotOnTarget("12");
 model.shotOnTarget("11");
 model.shotOnTarget("10");
+*/
+/*
+console.log(parseGuess("A0"));
+console.log(parseGuess("B6"));
+console.log(parseGuess("G3"));
+console.log(parseGuess("H0"));
+console.log(parseGuess("A7"));
+*/
+/*
+controller.processGuess("A0");
+controller.processGuess("A6");
+controller.processGuess("B6");
+controller.processGuess("C6");
+controller.processGuess("C4");
+controller.processGuess("D4");
+controller.processGuess("E4");
+controller.processGuess("B0");
+controller.processGuess("B1");
+controller.processGuess("B2");
+controller.processGuess("35");
+controller.processGuess("asfr");
+*/
 //add code above here
 })();
