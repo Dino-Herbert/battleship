@@ -6,16 +6,22 @@ h1 {
   font-size: 50px;
 }
 
-div#board {
+#board,
+#tableGrid {
   position: relative;
   width: 1024px;
-  height: 863px;
+  /*height: 863px;*/
   margin: auto;
   /*background-url: ("board.jpg");*/
 }
 
+#inputForm {
+  float: right;
+}
+
 .title {
   margin-top: 50px;
+  color: #00f; /*blue;*/
 }
 
 .table {
@@ -28,5 +34,31 @@ div#board {
 }
 
 .tbl-data {
-  border: solid 1px gray;
+  border: solid 2px gray;
+}
+
+#messageArea {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #0f0; /*green*/
+  font-size: 20px;
+}
+
+.hit,
+.miss {
+  width: 103px;
+  text-align: center;
+  font-size: 35px;
+  z-index: 100;
+  border-collapse: separate;
+}
+
+.hit {
+  color: #f00; /*red*/
+}
+
+.miss {
+  color: #ff0; /*yellow is #ff0*/
+  font-size: 32px;
 }
