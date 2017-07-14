@@ -44,7 +44,7 @@ function createTable () {
   }
 
   squareTableCells();
-}
+} //end of createTable
 
 function squareTableCells() {
   var width = $('.tbl-data').width();
@@ -52,6 +52,8 @@ function squareTableCells() {
 }
 
 createTable();
+//model.generateShipLocations(); //can't be here; model undefined
+//above done after page load
 
 $('#inputButton').on('click', function() {
   var input = $('#guessInput'); //document.getElementbyId('guessInput').value
@@ -67,7 +69,6 @@ $('#guessInput').on('keypress', function(e) {
     return false;
   }
 });
-
 
 var view = {
   displayMessage: function(msg) {
@@ -87,15 +88,16 @@ var view = {
 };
 
 var model = {
-  boardRows: 7,
-  boardCols: 10,
+  numRows: 7,
+  numCols: 10,
   numShips: 3,
   shipLength: 3,
-  shipsSunks: 0,
+  shipsSunk: 0,
+  allShipsSunk: false,
   ships: [
-    { locations: ["06", "16", "26"], hits: ["", "", ""]},
-    { locations: ["24", "34", "44"], hits: ["", "", ""]},
-    { locations: ["10", "11", "12"], hits: ["", "", ""]}
+    { locations: ["0", "0", "0"], hits: ["", "", ""]},
+    { locations: ["0", "0", "0"], hits: ["", "", ""]},
+    { locations: ["0", "0", "0"], hits: ["", "", ""]}
   ],
   shotOnTarget: function(guess) {
     for (var i = 0; i < this.numShips; i++) {
@@ -125,21 +127,77 @@ var model = {
       }
     }
     return true;
+  },
+  generateShipLocations: function() {
+    var locations;
+    for (var i = 0; i < this.numShips; i++) {
+      do {
+        locations = this.generateShip();
+      } while (this.collision(locations));
+
+      this.ships[i].locations = locations;
+    }
+  },
+  generateShip: function() {
+    var direction = Math.floor(Math.random() * 2);
+    var row;
+    var col;
+    var numR = this.numRows;
+    var numC = this.numCols;
+
+    if (direction === 1) {
+      row = Math.floor(Math.random() * this.numRows);
+      col = Math.floor(Math.random() * (this.numCols - this.shipLength));
+    } else {
+      row = Math.floor(Math.random() * (this.numRows - this.shipLength));
+      col = Math.floor(Math.random() * this.numCols);
+}
+    var newShipLocations = [];
+
+    for (var i = 0; i < this.shipLength; i++) {
+      if (direction === 1) {
+        newShipLocations.push(row + "" + (col + i));
+      } else {
+        newShipLocations.push((row + i) + "" + col);
+      }
+    }
+    return newShipLocations;
+  },
+  collision: function(locations) {
+    for (var i = 0; i < this.numShips; i++) {
+      var ship = model.ships[i];
+      for (var j = 0; j < locations.length; j++) {
+        if (ship.locations.indexOf(locations[j]) >= 0) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
-};
+
+}; //end of model
 
 var controller = {
   guesses: 0,
   processGuess: function(guess) {
-    var location = parseGuess(guess);
+    var location;
+
+    if(this.allShipsSunk){
+      //view.displayMessage("GAME OVER.  Wanna play again?");
+      confirm("GAME OVER. Wanna play again?");
+      location.reload();
+    } else {
+      location = parseGuess(guess);
+    }
 
     if(location) {
       this.guesses++;
       var isOnTarget = model.shotOnTarget(location);
 
-      if(isOnTarget && model.shipssunk === model.numShips) {
+      if(isOnTarget && model.shipsSunk === model.numShips) {
         view.displayMessage("You sank ALL my battleships in " +
         this.guesses + " guesses.");
+        this.allShipsSunk = true;
       }
     }
   }
@@ -155,7 +213,7 @@ function parseGuess(guess) {
     var firstChar = guess.charAt(0);
     var row = alpha.indexOf(firstChar);
     var column = guess.charAt(1);
-
+//CHECK IF USER GUESSES SAME CELL
     if(isNaN(row) || isNaN(column)) {
       alert("That is not on the board");
     }
@@ -169,6 +227,8 @@ function parseGuess(guess) {
   }
   return null;
 }
+
+model.generateShipLocations();
 /*testing */
 /*
 view.displayHit('00');
@@ -196,7 +256,27 @@ console.log(parseGuess("A7"));
 */
 /*
 controller.processGuess("A0");
+controller.processGuess("A1");
+controller.processGuess("A2");
+controller.processGuess("A3");
+controller.processGuess("A4");
+controller.processGuess("A5");
 controller.processGuess("A6");
+controller.processGuess("A7");
+controller.processGuess("A8");
+controller.processGuess("A9");
+
+controller.processGuess("B0");
+controller.processGuess("B1");
+controller.processGuess("B2");
+controller.processGuess("B3");
+controller.processGuess("B4");
+controller.processGuess("B5");
+controller.processGuess("B6");
+controller.processGuess("B7");
+controller.processGuess("B8");
+controller.processGuess("B9");
+
 controller.processGuess("B6");
 controller.processGuess("C6");
 controller.processGuess("C4");
@@ -205,8 +285,9 @@ controller.processGuess("E4");
 controller.processGuess("B0");
 controller.processGuess("B1");
 controller.processGuess("B2");
-controller.processGuess("35");
-controller.processGuess("asfr");
+
 */
+
+
 //add code above here
 })();
